@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Todo 一覧</title>
+  <style>
+    :root {
+      --bg: #f5f6f8;
+      --card: #fff;
+      --text: #1a1a1a;
+      --muted: #5c6370;
+      --border: #e2e4e9;
+      --err-bg: #fde8e8;
+      --err-border: #f5a8a8;
+      --err-text: #8b1e1e;
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: "Segoe UI", "Hiragino Sans", "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
+      margin: 0;
+      padding: 1.5rem;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+    }
+    h1 {
+      font-size: 1.35rem;
+      font-weight: 600;
+      margin: 0 0 1rem;
+    }
+    .card {
+      background: var(--card);
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      padding: 1.25rem;
+      max-width: 960px;
+      margin: 0 auto;
+      box-shadow: 0 1px 3px rgba(0,0,0,.06);
+    }
+    .error {
+      background: var(--err-bg);
+      border: 1px solid var(--err-border);
+      color: var(--err-text);
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      font-size: 0.9rem;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .empty {
+      color: var(--muted);
+      margin: 0;
+      font-size: 0.95rem;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+    th, td {
+      text-align: left;
+      padding: 0.6rem 0.75rem;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+    th {
+      font-weight: 600;
+      color: var(--muted);
+      font-size: 0.8rem;
+      text-transform: none;
+      background: #fafbfc;
+    }
+    tr:last-child td { border-bottom: none; }
+    td.id { width: 4rem; white-space: nowrap; }
+    td.due { width: 7.5rem; white-space: nowrap; }
+    td.actions { width: 5rem; white-space: nowrap; }
+    td.actions a {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #2563eb;
+      text-decoration: none;
+    }
+    td.actions a:hover { text-decoration: underline; }
+    .toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+    .toolbar h1 { margin: 0; }
+    .toolbar a {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #2563eb;
+      text-decoration: none;
+    }
+    .toolbar a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="toolbar">
+      <h1>Todo 一覧</h1>
+      <a href="{{ url_for('add') }}">新規追加</a>
+    </div>
+
+    {% if error %}
+    <div class="error" role="alert">{{ error }}</div>
+    {% endif %}
+
+    {% if not error and todos|length == 0 %}
+    <p class="empty">データがありません（見出しのみ、または空のシートです）。</p>
+    {% elif not error %}
+    <table>
+      <thead>
+        <tr>
+          {% for h in headers %}
+          <th>{{ h }}</th>
+          {% endfor %}
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for t in todos %}
+        <tr>
+          <td class="id">{{ t.id }}</td>
+          <td>{{ t.title }}</td>
+          <td>{{ t.content }}</td>
+          <td class="due">{{ t.due }}</td>
+          <td class="actions"><a href="{{ url_for('edit', todo_id=t.id) }}">編集</a></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% endif %}
+  </div>
+</body>
+</html>

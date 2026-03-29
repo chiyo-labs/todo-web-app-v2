@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Todo 新規登録</title>
+  <style>
+    :root {
+      --bg: #f5f6f8;
+      --card: #fff;
+      --text: #1a1a1a;
+      --muted: #5c6370;
+      --border: #e2e4e9;
+      --err-bg: #fde8e8;
+      --err-border: #f5a8a8;
+      --err-text: #8b1e1e;
+      --accent: #2563eb;
+      --accent-hover: #1d4ed8;
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: "Segoe UI", "Hiragino Sans", "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
+      margin: 0;
+      padding: 1.5rem;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+    }
+    h1 {
+      font-size: 1.35rem;
+      font-weight: 600;
+      margin: 0 0 1rem;
+    }
+    .card {
+      background: var(--card);
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      padding: 1.25rem;
+      max-width: 520px;
+      margin: 0 auto;
+      box-shadow: 0 1px 3px rgba(0,0,0,.06);
+    }
+    .error {
+      background: var(--err-bg);
+      border: 1px solid var(--err-border);
+      color: var(--err-text);
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      font-size: 0.9rem;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--muted);
+      margin-bottom: 0.35rem;
+    }
+    .field { margin-bottom: 1rem; }
+    input[type="text"],
+    input[type="date"],
+    textarea {
+      width: 100%;
+      padding: 0.55rem 0.65rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-family: inherit;
+    }
+    textarea { min-height: 6rem; resize: vertical; }
+    .actions {
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+      margin-top: 1.25rem;
+      flex-wrap: wrap;
+    }
+    button[type="submit"] {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      padding: 0.55rem 1.1rem;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    button[type="submit"]:hover { background: var(--accent-hover); }
+    .back {
+      color: var(--muted);
+      font-size: 0.9rem;
+      text-decoration: none;
+    }
+    .back:hover { color: var(--text); text-decoration: underline; }
+    .req { color: var(--err-text); font-weight: 700; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Todo 新規登録</h1>
+
+    {% if error %}
+    <div class="error" role="alert">{{ error }}</div>
+    {% endif %}
+
+    <form method="post" action="{{ url_for('add') }}">
+      <div class="field">
+        <label for="title">タイトル <span class="req">*</span></label>
+        <input type="text" id="title" name="title" value="{{ title }}" required maxlength="500" autocomplete="off">
+      </div>
+      <div class="field">
+        <label for="content">内容</label>
+        <textarea id="content" name="content" maxlength="5000">{{ content }}</textarea>
+      </div>
+      <div class="field">
+        <label for="due">期日</label>
+        <input type="date" id="due" name="due" value="{{ due }}">
+      </div>
+      <div class="actions">
+        <button type="submit">送信</button>
+        <a class="back" href="{{ url_for('index') }}">一覧に戻る</a>
+      </div>
+    </form>
+  </div>
+</body>
+</html>
