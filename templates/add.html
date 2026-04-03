@@ -118,6 +118,14 @@
         <label for="due">期日</label>
         <input type="date" id="due" name="due" value="{{ due }}">
       </div>
+      <div class="field">
+        <label for="priority">優先度</label>
+        <select id="priority" name="priority">
+          <option value="高">高</option>
+          <option value="中" selected>中</option>
+          <option value="低">低</option>
+        </select>
+      </div>
       <div class="actions">
         <button type="submit">送信</button>
         <a class="back" href="{{ url_for('index') }}">一覧に戻る</a>

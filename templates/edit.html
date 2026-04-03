@@ -66,6 +66,7 @@
     .field { margin-bottom: 1rem; }
     input[type="text"],
     input[type="date"],
+    select,
     textarea {
       width: 100%;
       padding: 0.55rem 0.65rem;
@@ -123,6 +124,14 @@
       <div class="field">
         <label for="due">期日</label>
         <input type="date" id="due" name="due" value="{{ due }}">
+      </div>
+      <div class="field">
+        <label for="priority">優先度</label>
+        <select id="priority" name="priority">
+          <option value="高" {% if priority == "高" %}selected{% endif %}>高</option>
+          <option value="中" {% if priority == "中" %}selected{% endif %}>中</option>
+          <option value="低" {% if priority == "低" %}selected{% endif %}>低</option>
+        </select>
       </div>
       <div class="actions">
         <button type="submit">保存</button>

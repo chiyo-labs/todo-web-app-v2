@@ -3,140 +3,301 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Todo 一覧</title>
+  <title>Todo一覧</title>
   <style>
     :root {
       --bg: #f5f6f8;
-      --card: #fff;
+      --card: #ffffff;
       --text: #1a1a1a;
       --muted: #5c6370;
       --border: #e2e4e9;
+      --accent: #2563eb;
+      --accent-hover: #1d4ed8;
+      --high-bg: #fee2e2;
+      --high-text: #b91c1c;
+      --medium-bg: #fef3c7;
+      --medium-text: #b45309;
+      --low-bg: #e5e7eb;
+      --low-text: #4b5563;
       --err-bg: #fde8e8;
       --err-border: #f5a8a8;
       --err-text: #8b1e1e;
     }
+
     * { box-sizing: border-box; }
+
     body {
-      font-family: "Segoe UI", "Hiragino Sans", "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
       margin: 0;
       padding: 1.5rem;
+      font-family: "Segoe UI", "Hiragino Sans", "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
       background: var(--bg);
       color: var(--text);
       line-height: 1.5;
     }
-    h1 {
-      font-size: 1.35rem;
-      font-weight: 600;
-      margin: 0 0 1rem;
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
     }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+
+    .add-btn {
+      display: inline-block;
+      background: var(--accent);
+      color: #fff;
+      text-decoration: none;
+      padding: 0.65rem 1rem;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    .add-btn:hover {
+      background: var(--accent-hover);
+    }
+
     .card {
       background: var(--card);
-      border-radius: 10px;
       border: 1px solid var(--border);
-      padding: 1.25rem;
-      max-width: 960px;
-      margin: 0 auto;
+      border-radius: 12px;
       box-shadow: 0 1px 3px rgba(0,0,0,.06);
+      overflow: hidden;
     }
+
     .error {
       background: var(--err-bg);
       border: 1px solid var(--err-border);
       color: var(--err-text);
-      padding: 0.75rem 1rem;
+      padding: 0.85rem 1rem;
       border-radius: 8px;
       margin-bottom: 1rem;
-      font-size: 0.9rem;
       white-space: pre-wrap;
       word-break: break-word;
     }
-    .empty {
-      color: var(--muted);
-      margin: 0;
-      font-size: 0.95rem;
+
+    .table-wrap {
+      width: 100%;
+      overflow-x: auto;
     }
+
     table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 0.9rem;
+      min-width: 880px;
     }
-    th, td {
-      text-align: left;
-      padding: 0.6rem 0.75rem;
-      border-bottom: 1px solid var(--border);
-      vertical-align: top;
+
+    tr.todo-done {
+      background: rgba(241, 245, 249, 0.95);
     }
-    th {
-      font-weight: 600;
+
+    tr.todo-done td {
+      opacity: 0.58;
       color: var(--muted);
-      font-size: 0.8rem;
-      text-transform: none;
-      background: #fafbfc;
+      text-decoration: line-through;
     }
-    tr:last-child td { border-bottom: none; }
-    td.id { width: 4rem; white-space: nowrap; }
-    td.due { width: 7.5rem; white-space: nowrap; }
-    td.actions { width: 5rem; white-space: nowrap; }
-    td.actions a {
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: #2563eb;
+
+    tr.todo-done td.td-done-toggle,
+    tr.todo-done td.td-done-actions {
+      opacity: 1;
       text-decoration: none;
     }
-    td.actions a:hover { text-decoration: underline; }
-    .toolbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 0.75rem;
-      margin-bottom: 1rem;
+
+    .done-badge {
+      display: inline-block;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #fff;
+      background: #64748b;
+      padding: 0.2rem 0.5rem;
+      border-radius: 6px;
+      margin-right: 0.4rem;
+      vertical-align: middle;
+      text-decoration: none !important;
+      line-height: 1.2;
     }
-    .toolbar h1 { margin: 0; }
-    .toolbar a {
+
+    .toggle-form {
+      margin: 0;
+      display: inline-block;
+    }
+
+    .toggle-form input[type="checkbox"] {
+      width: 1.1rem;
+      height: 1.1rem;
+      cursor: pointer;
+    }
+
+    th, td {
+      padding: 0.85rem 0.9rem;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+      vertical-align: top;
+      font-size: 0.94rem;
+    }
+
+    th {
+      background: #f8fafc;
+      color: var(--muted);
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    .priority-badge {
+      display: inline-block;
+      padding: 0.3rem 0.6rem;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .priority-high {
+      background: #fee2e2;
+      color: #b91c1c;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-weight: bold;
+    }
+
+    .priority-medium {
+      background: #fef3c7;
+      color: #b45309;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-weight: bold;
+    }
+
+    .priority-low {
+      background: #e5e7eb;
+      color: #4b5563;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-weight: bold;
+    }
+
+    .edit-btn {
+      display: inline-block;
+      text-decoration: none;
+      color: var(--accent);
+      font-weight: 600;
       font-size: 0.9rem;
-      font-weight: 600;
-      color: #2563eb;
-      text-decoration: none;
     }
-    .toolbar a:hover { text-decoration: underline; }
+
+    .edit-btn:hover {
+      text-decoration: underline;
+    }
+
+    .empty {
+      padding: 1.2rem;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    @media (max-width: 768px) {
+      body {
+        padding: 1rem;
+      }
+
+      h1 {
+        font-size: 1.3rem;
+      }
+
+      .add-btn {
+        width: 100%;
+        text-align: center;
+      }
+    }
   </style>
 </head>
 <body>
-  <div class="card">
-    <div class="toolbar">
-      <h1>Todo 一覧</h1>
-      <a href="{{ url_for('add') }}">新規追加</a>
+  <div class="container">
+    <div class="header">
+      <h1>Todo一覧</h1>
+      <a href="{{ url_for('add') }}" class="add-btn">新規追加</a>
     </div>
 
     {% if error %}
     <div class="error" role="alert">{{ error }}</div>
     {% endif %}
 
-    {% if not error and todos|length == 0 %}
-    <p class="empty">データがありません（見出しのみ、または空のシートです）。</p>
-    {% elif not error %}
-    <table>
-      <thead>
-        <tr>
-          {% for h in headers %}
-          <th>{{ h }}</th>
-          {% endfor %}
-          <th>操作</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for t in todos %}
-        <tr>
-          <td class="id">{{ t.id }}</td>
-          <td>{{ t.title }}</td>
-          <td>{{ t.content }}</td>
-          <td class="due">{{ t.due }}</td>
-          <td class="actions"><a href="{{ url_for('edit', todo_id=t.id) }}">編集</a></td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-    {% endif %}
+    <div class="card">
+      {% if todos %}
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>タイトル</th>
+              <th>内容</th>
+              <th>期日</th>
+              <th>優先度</th>
+              <th>完了</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for todo in todos %}
+            <tr class="{% if todo.done == '完了' %}todo-done{% endif %}" {% if todo.done == '完了' %}aria-label="完了済みタスク"{% endif %}>
+              <td>{{ todo.id }}</td>
+              <td>
+                {% if todo.done == "完了" %}
+                <span class="done-badge">完了済</span>
+                {% endif %}
+                {{ todo.title }}
+              </td>
+              <td>{{ todo.content }}</td>
+              <td>{{ todo.due }}</td>
+              <td>
+                {% if todo.priority == "高" %}
+                  <span class="priority-high">高</span>
+                {% elif todo.priority == "中" %}
+                  <span class="priority-medium">中</span>
+                {% elif todo.priority == "低" %}
+                  <span class="priority-low">低</span>
+                {% else %}
+                  {{ todo.priority }}
+                {% endif %}
+              </td>
+              <td class="td-done-toggle">
+                <form method="post" action="{{ url_for('toggle_done', todo_id=todo.id) }}" class="toggle-form">
+                  <input
+                    type="checkbox"
+                    title="完了にする / 戻す"
+                    {% if todo.done == "完了" %}checked{% endif %}
+                    onchange="this.form.submit()"
+                  >
+                </form>
+              </td>
+              <td class="td-done-actions">
+                <a href="{{ url_for('edit', todo_id=todo.id) }}" class="edit-btn">編集</a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="empty">Todoはまだ登録されていません。</div>
+      {% endif %}
+    </div>
   </div>
 </body>
 </html>
