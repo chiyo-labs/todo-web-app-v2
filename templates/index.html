@@ -3,32 +3,29 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Todo一覧</title>
+  <title>習慣化サポートアプリ</title>
   <style>
     :root {
-      --bg: #f5f6f8;
+      --bg: #f4f6fb;
       --card: #ffffff;
-      --text: #1a1a1a;
-      --muted: #5c6370;
-      --border: #e2e4e9;
+      --text: #111827;
+      --muted: #6b7280;
+      --border: #e5e7eb;
       --accent: #2563eb;
       --accent-hover: #1d4ed8;
-      --high-bg: #fee2e2;
-      --high-text: #b91c1c;
-      --medium-bg: #fef3c7;
-      --medium-text: #b45309;
-      --low-bg: #e5e7eb;
-      --low-text: #4b5563;
-      --err-bg: #fde8e8;
-      --err-border: #f5a8a8;
-      --err-text: #8b1e1e;
+      --ok-bg: #ecfdf5;
+      --ok-border: #a7f3d0;
+      --ok-text: #065f46;
+      --err-bg: #fef2f2;
+      --err-border: #fecaca;
+      --err-text: #991b1b;
     }
 
     * { box-sizing: border-box; }
 
     body {
       margin: 0;
-      padding: 1.5rem;
+      padding: 1rem;
       font-family: "Segoe UI", "Hiragino Sans", "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
       background: var(--bg);
       color: var(--text);
@@ -36,193 +33,505 @@
     }
 
     .container {
-      max-width: 1000px;
+      max-width: 680px;
       margin: 0 auto;
     }
 
     .header {
       display: flex;
-      justify-content: space-between;
+      flex-direction: column;
+      justify-content: flex-start;
       align-items: center;
-      gap: 1rem;
-      flex-wrap: wrap;
+      gap: 0.65rem;
       margin-bottom: 1rem;
     }
 
     h1 {
       margin: 0;
-      font-size: 1.5rem;
-      font-weight: 700;
+      font-size: 1.35rem;
+      font-weight: 800;
+      text-align: center;
     }
 
-    .add-btn {
-      display: inline-block;
+    .sub {
+      margin: 0;
+      font-size: 0.9rem;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .btn {
       background: var(--accent);
       color: #fff;
-      text-decoration: none;
-      padding: 0.65rem 1rem;
+      border: none;
+      padding: 0.6rem 0.95rem;
       border-radius: 8px;
       font-weight: 600;
-      font-size: 0.95rem;
+      font-size: 0.9rem;
+      cursor: pointer;
     }
 
-    .add-btn:hover {
+    .btn:hover {
       background: var(--accent-hover);
+    }
+
+    .btn-ghost {
+      background: #e5e7eb;
+      color: #374151;
+    }
+
+    .btn-ghost:hover {
+      background: #d1d5db;
     }
 
     .card {
       background: var(--card);
       border: 1px solid var(--border);
       border-radius: 12px;
-      box-shadow: 0 1px 3px rgba(0,0,0,.06);
-      overflow: hidden;
+      box-shadow: 0 2px 10px rgba(0,0,0,.05);
+      padding: 0.95rem;
+      margin-bottom: 0.9rem;
+    }
+
+    .menu-nav {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.5rem;
+      margin-bottom: 0.9rem;
+    }
+
+    .menu-btn {
+      border: 1px solid var(--border);
+      background: #fff;
+      color: #374151;
+      border-radius: 10px;
+      padding: 0.6rem 0.45rem;
+      font-size: 0.86rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .menu-btn.is-active {
+      border-color: var(--accent);
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .page {
+      display: none;
+    }
+
+    .page.is-visible {
+      display: block;
+    }
+
+    .section-title {
+      margin: 0 0 0.75rem;
+      font-size: 1rem;
+      font-weight: 700;
+    }
+
+    .meta {
+      font-size: 0.83rem;
+      color: var(--muted);
+      margin-bottom: 0.7rem;
+    }
+
+    .month-summary {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 0.55rem 0.7rem;
+      margin-bottom: 0.65rem;
+    }
+
+    .month-stamp {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #334155;
+      line-height: 1.4;
+    }
+
+    .month-rate {
+      font-size: 0.84rem;
+      color: #64748b;
+      margin-top: 0.15rem;
+      line-height: 1.35;
+    }
+
+    .habit-form {
+      display: flex;
+      flex-direction: column;
+      gap: 0.7rem;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .field label {
+      color: var(--muted);
+      font-size: 0.82rem;
+      font-weight: 600;
+    }
+
+    .field input,
+    .field select {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.62rem 0.68rem;
+      font-size: 0.92rem;
+      font-family: inherit;
+      background: #fff;
+    }
+
+    .weekday-buttons {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      gap: 0.35rem;
+    }
+
+    .weekday-btn {
+      border: 1px solid var(--border);
+      background: #fff;
+      color: #374151;
+      border-radius: 8px;
+      padding: 0.45rem 0.2rem;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .weekday-btn.is-active {
+      border-color: var(--accent);
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 0.55rem;
+      flex-wrap: wrap;
     }
 
     .error {
       background: var(--err-bg);
       border: 1px solid var(--err-border);
       color: var(--err-text);
-      padding: 0.85rem 1rem;
+      padding: 0.72rem 0.85rem;
       border-radius: 8px;
-      margin-bottom: 1rem;
-      white-space: pre-wrap;
-      word-break: break-word;
+      margin-bottom: 0.9rem;
+      font-size: 0.88rem;
     }
 
-    .table-wrap {
-      width: 100%;
-      overflow-x: auto;
+    .ok {
+      background: var(--ok-bg);
+      border: 1px solid var(--ok-border);
+      color: var(--ok-text);
+      padding: 0.72rem 0.85rem;
+      border-radius: 8px;
+      margin-bottom: 0.9rem;
+      font-size: 0.88rem;
     }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      min-width: 880px;
+    .habit-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
     }
 
-    tr.todo-done {
-      background: rgba(241, 245, 249, 0.95);
+    .habit-item {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.7rem 0.72rem;
+      background: #fff;
     }
 
-    tr.todo-done td {
-      opacity: 0.58;
+    .habit-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.55rem;
+    }
+
+    .habit-main {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      min-width: 0;
+    }
+
+    .habit-name {
+      font-size: 0.96rem;
+      font-weight: 600;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .habit-sub {
+      font-size: 0.8rem;
       color: var(--muted);
-      text-decoration: line-through;
+      margin-top: 0.1rem;
     }
 
-    tr.todo-done td.td-done-toggle,
-    tr.todo-done td.td-done-actions {
-      opacity: 1;
-      text-decoration: none;
-    }
-
-    .done-badge {
-      display: inline-block;
-      font-size: 0.72rem;
+    .check-btn {
+      min-width: 74px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 0.45rem 0.6rem;
+      font-size: 0.82rem;
       font-weight: 700;
+      cursor: pointer;
+      background: #fff;
+      color: #374151;
+    }
+
+    .check-btn.checked {
+      border-color: #22c55e;
+      background: #22c55e;
       color: #fff;
-      background: #64748b;
-      padding: 0.2rem 0.5rem;
-      border-radius: 6px;
-      margin-right: 0.4rem;
-      vertical-align: middle;
-      text-decoration: none !important;
-      line-height: 1.2;
     }
 
-    .toggle-form {
-      margin: 0;
-      display: inline-block;
-    }
-
-    .toggle-form input[type="checkbox"] {
-      width: 1.1rem;
-      height: 1.1rem;
+    .delete-btn {
+      margin-top: 0.55rem;
+      padding: 0;
+      border: none;
+      background: transparent;
+      color: #dc2626;
+      font-size: 0.82rem;
+      font-weight: 600;
       cursor: pointer;
     }
 
-    th, td {
-      padding: 0.85rem 0.9rem;
-      border-bottom: 1px solid var(--border);
-      text-align: left;
-      vertical-align: top;
-      font-size: 0.94rem;
-    }
-
-    th {
-      background: #f8fafc;
+    .empty {
+      padding: 0.7rem 0.1rem;
       color: var(--muted);
-      font-weight: 700;
-      white-space: nowrap;
-    }
-
-    tr:last-child td {
-      border-bottom: none;
-    }
-
-    .priority-badge {
-      display: inline-block;
-      padding: 0.3rem 0.6rem;
-      border-radius: 999px;
-      font-size: 0.82rem;
-      font-weight: 700;
-      white-space: nowrap;
-    }
-
-    .priority-high {
-      background: #fee2e2;
-      color: #b91c1c;
-      padding: 4px 8px;
-      border-radius: 6px;
-      font-weight: bold;
-    }
-
-    .priority-medium {
-      background: #fef3c7;
-      color: #b45309;
-      padding: 4px 8px;
-      border-radius: 6px;
-      font-weight: bold;
-    }
-
-    .priority-low {
-      background: #e5e7eb;
-      color: #4b5563;
-      padding: 4px 8px;
-      border-radius: 6px;
-      font-weight: bold;
-    }
-
-    .edit-btn {
-      display: inline-block;
-      text-decoration: none;
-      color: var(--accent);
-      font-weight: 600;
       font-size: 0.9rem;
     }
 
-    .edit-btn:hover {
-      text-decoration: underline;
-    }
-
-    .empty {
-      padding: 1.2rem;
+    .footer {
+      font-size: 0.76rem;
       color: var(--muted);
-      font-size: 0.95rem;
+      text-align: center;
+      margin-top: 0.4rem;
     }
 
-    @media (max-width: 768px) {
-      body {
-        padding: 1rem;
+    .stamp-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .stamp-item {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.7rem 0.72rem;
+      background: #fff;
+    }
+
+    .stamp-name {
+      font-size: 0.95rem;
+      font-weight: 700;
+    }
+
+    .stamp-streak {
+      margin-top: 0.2rem;
+      color: var(--muted);
+      font-size: 0.84rem;
+    }
+
+    .reward-setting {
+      margin-top: 0.85rem;
+      padding-top: 0.75rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .calendar-head {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 0.45rem;
+      margin-bottom: 0.65rem;
+    }
+
+    .month-label {
+      text-align: center;
+      font-size: 0.98rem;
+      font-weight: 700;
+    }
+
+    .month-nav-btn {
+      border: 1px solid var(--border);
+      background: #fff;
+      color: #374151;
+      border-radius: 8px;
+      width: 2rem;
+      height: 2rem;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      gap: 0.3rem;
+      margin-top: 0.5rem;
+    }
+
+    .calendar-weekday {
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.76rem;
+      font-weight: 700;
+      padding: 0.2rem 0;
+    }
+
+    .calendar-cell {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      min-height: 3.35rem;
+      background: #ffffff;
+      padding: 0.28rem 0.22rem 0.5rem;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: center;
+      gap: 0.12rem;
+      color: #6b7280;
+      position: relative;
+      cursor: pointer;
+    }
+
+    .calendar-cell.is-empty {
+      border: none;
+      background: transparent;
+    }
+
+    .calendar-cell.is-today {
+      outline: 2px solid #2563eb;
+      outline-offset: 1px;
+    }
+
+    .calendar-cell.is-selected {
+      background: #eff6ff;
+      border-color: #60a5fa;
+    }
+
+    .calendar-day {
+      font-size: 0.82rem;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+
+    .calendar-star {
+      min-height: 1rem;
+      line-height: 1;
+      font-size: 0.95rem;
+      user-select: none;
+      flex-shrink: 0;
+    }
+
+    .calendar-star.calendar-star-placeholder {
+      visibility: hidden;
+    }
+
+    .calendar-star.star-blue {
+      color: #1d4ed8;
+      text-shadow: 0 0 0.5px rgba(37, 99, 235, 0.35);
+    }
+
+    .calendar-star.star-gold {
+      color: #d97706;
+      font-size: 1.05rem;
+      text-shadow: 0 0 0.5px rgba(245, 158, 11, 0.4);
+    }
+
+    .calendar-line {
+      position: absolute;
+      bottom: 4px;
+      left: 10%;
+      width: 80%;
+      height: 4px;
+      border-radius: 2px;
+    }
+
+    .line-yellow {
+      background: #eab308;
+    }
+
+    .line-pink {
+      background: #ec4899;
+    }
+
+    .line-blue {
+      background: #3b82f6;
+    }
+
+    .line-green {
+      background: #22c55e;
+    }
+
+    .day-detail {
+      margin-top: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: #f8fafc;
+      padding: 0.7rem 0.75rem;
+    }
+
+    .day-detail-title {
+      margin: 0 0 0.45rem;
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: #334155;
+    }
+
+    .day-detail-meta {
+      margin: 0 0 0.55rem;
+      font-size: 0.82rem;
+      color: #64748b;
+    }
+
+    .day-detail-list {
+      margin: 0 0 0.5rem;
+      padding-left: 1rem;
+      font-size: 0.84rem;
+      color: #334155;
+    }
+
+    .day-detail-list:last-child {
+      margin-bottom: 0;
+    }
+
+    .day-detail-empty {
+      margin: 0 0 0.55rem;
+      font-size: 0.84rem;
+      color: #64748b;
+    }
+
+    .reward-badge {
+      background: #fef3c7;
+      border: 1px solid #fde68a;
+      color: #92400e;
+      border-radius: 8px;
+      padding: 0.55rem 0.7rem;
+      font-size: 0.86rem;
+      margin-top: 0.6rem;
+    }
+
+    @media (max-width: 420px) {
+      .form-actions .btn {
+        flex: 1;
       }
 
-      h1 {
-        font-size: 1.3rem;
-      }
-
-      .add-btn {
-        width: 100%;
-        text-align: center;
+      .habit-row {
+        align-items: flex-start;
       }
     }
   </style>
@@ -230,74 +539,895 @@
 <body>
   <div class="container">
     <div class="header">
-      <h1>Todo一覧</h1>
-      <a href="{{ url_for('add') }}" class="add-btn">新規追加</a>
+      <h1>習慣化サポートアプリ</h1>
+      <p class="sub">今日の一歩を、毎日の習慣に。</p>
     </div>
 
-    {% if error %}
-    <div class="error" role="alert">{{ error }}</div>
-    {% endif %}
+    <div id="errorBox" class="error" role="alert" hidden></div>
+    <div id="okBox" class="ok" role="status" hidden></div>
 
-    <div class="card">
-      {% if todos %}
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>タイトル</th>
-              <th>内容</th>
-              <th>期日</th>
-              <th>優先度</th>
-              <th>完了</th>
-              <th>操作</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for todo in todos %}
-            <tr class="{% if todo.done == '完了' %}todo-done{% endif %}" {% if todo.done == '完了' %}aria-label="完了済みタスク"{% endif %}>
-              <td>{{ todo.id }}</td>
-              <td>
-                {% if todo.done == "完了" %}
-                <span class="done-badge">完了済</span>
-                {% endif %}
-                {{ todo.title }}
-              </td>
-              <td>{{ todo.content }}</td>
-              <td>{{ todo.due }}</td>
-              <td>
-                {% if todo.priority == "高" %}
-                  <span class="priority-high">高</span>
-                {% elif todo.priority == "中" %}
-                  <span class="priority-medium">中</span>
-                {% elif todo.priority == "低" %}
-                  <span class="priority-low">低</span>
-                {% else %}
-                  {{ todo.priority }}
-                {% endif %}
-              </td>
-              <td class="td-done-toggle">
-                <form method="post" action="{{ url_for('toggle_done', todo_id=todo.id) }}" class="toggle-form">
-                  <input
-                    type="checkbox"
-                    title="完了にする / 戻す"
-                    {% if todo.done == "完了" %}checked{% endif %}
-                    onchange="this.form.submit()"
-                  >
-                </form>
-              </td>
-              <td class="td-done-actions">
-                <a href="{{ url_for('edit', todo_id=todo.id) }}" class="edit-btn">編集</a>
-              </td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
+    <div class="menu-nav" id="menuNav">
+      <button type="button" class="menu-btn is-active" data-page="home">ホーム</button>
+      <button type="button" class="menu-btn" data-page="setup">設定</button>
+      <button type="button" class="menu-btn" data-page="stamp">スタンプ</button>
+    </div>
+
+    <div id="homePage" class="page is-visible">
+      <div class="card">
+        <h2 class="section-title">今日の習慣一覧</h2>
+        <div id="todayInfo" class="meta"></div>
+        <div id="habitList" class="habit-list"></div>
+        <div id="emptyBox" class="empty" hidden>まだ習慣が登録されていません。設定画面から追加してください。</div>
       </div>
-      {% else %}
-      <div class="empty">Todoはまだ登録されていません。</div>
-      {% endif %}
+    </div>
+
+    <div id="setupPage" class="page">
+      <div class="card">
+        <h2 class="section-title">セット画面（習慣登録）</h2>
+        <form id="habitForm" class="habit-form">
+          <div class="field">
+            <label for="habitNameInput">習慣名</label>
+            <input id="habitNameInput" type="text" maxlength="100" required placeholder="例: 英語学習">
+          </div>
+          <div class="field">
+            <label for="frequencyInput">頻度</label>
+            <select id="frequencyInput" required>
+              <option value="daily">毎日</option>
+              <option value="oneday">1日</option>
+              <option value="weekly1">週1</option>
+              <option value="weekly3">週3</option>
+            </select>
+          </div>
+          <div id="weekdayField" class="field" hidden>
+            <label>曜日（週1は1つ、週3は3つ選択）</label>
+            <div id="weekdayButtons" class="weekday-buttons">
+              <button type="button" class="weekday-btn" data-weekday="1">月</button>
+              <button type="button" class="weekday-btn" data-weekday="2">火</button>
+              <button type="button" class="weekday-btn" data-weekday="3">水</button>
+              <button type="button" class="weekday-btn" data-weekday="4">木</button>
+              <button type="button" class="weekday-btn" data-weekday="5">金</button>
+              <button type="button" class="weekday-btn" data-weekday="6">土</button>
+              <button type="button" class="weekday-btn" data-weekday="0">日</button>
+            </div>
+            <div id="weekdayHint" class="meta"></div>
+          </div>
+          <div class="field">
+            <label for="startDateInput">開始日</label>
+            <input id="startDateInput" type="date" required>
+          </div>
+          <div class="field">
+            <label for="endDateInput">終了日（任意）</label>
+            <input id="endDateInput" type="date">
+          </div>
+          <div class="field">
+            <label for="lineColorInput">ライン色</label>
+            <select id="lineColorInput" required>
+              <option value="yellow">yellow</option>
+              <option value="pink">pink</option>
+              <option value="blue">blue</option>
+              <option value="green">green</option>
+            </select>
+          </div>
+          <div class="form-actions">
+            <button class="btn" type="submit">保存</button>
+            <button id="resetFormBtn" class="btn btn-ghost" type="button">入力クリア</button>
+          </div>
+        </form>
+        <div class="reward-setting">
+          <div class="field">
+            <label for="rewardInput">ごほうび設定（任意）</label>
+            <input id="rewardInput" type="text" maxlength="120" placeholder="例: カフェに行く">
+          </div>
+          <div class="form-actions">
+            <button id="saveRewardBtn" class="btn btn-ghost" type="button">ごほうびを保存</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="stampPage" class="page">
+      <div class="card">
+        <h2 class="section-title">月間カレンダー</h2>
+        <div class="calendar-head">
+          <button id="prevMonthBtn" type="button" class="month-nav-btn" aria-label="前の月">‹</button>
+          <div id="monthLabel" class="month-label"></div>
+          <button id="nextMonthBtn" type="button" class="month-nav-btn" aria-label="次の月">›</button>
+        </div>
+        <div class="month-summary">
+          <div id="monthStamp" class="month-stamp">🌟 今月のスタンプ：0個</div>
+          <div id="monthRate" class="month-rate">達成率：0%</div>
+        </div>
+        <div id="rewardBadge" class="reward-badge" hidden></div>
+        <div id="calendarGrid" class="calendar-grid"></div>
+        <div id="dayDetailCard" class="day-detail"></div>
+      </div>
+    </div>
+
+    <div class="footer">
+      localStorageに習慣データを保存しています
     </div>
   </div>
+  <script>
+    const STORAGE_PREFIX = "habit_support_app_v1";
+    const HABITS_KEY = `${STORAGE_PREFIX}:single_user:habits`;
+    const SETTINGS_KEY = `${STORAGE_PREFIX}:single_user:settings`;
+
+    const menuNav = document.getElementById("menuNav");
+    const homePage = document.getElementById("homePage");
+    const setupPage = document.getElementById("setupPage");
+    const stampPage = document.getElementById("stampPage");
+    const habitForm = document.getElementById("habitForm");
+    const habitNameInput = document.getElementById("habitNameInput");
+    const frequencyInput = document.getElementById("frequencyInput");
+    const weekdayField = document.getElementById("weekdayField");
+    const weekdayButtons = document.getElementById("weekdayButtons");
+    const weekdayHint = document.getElementById("weekdayHint");
+    const startDateInput = document.getElementById("startDateInput");
+    const endDateInput = document.getElementById("endDateInput");
+    const lineColorInput = document.getElementById("lineColorInput");
+    const resetFormBtn = document.getElementById("resetFormBtn");
+    const rewardInput = document.getElementById("rewardInput");
+    const saveRewardBtn = document.getElementById("saveRewardBtn");
+    const habitList = document.getElementById("habitList");
+    const prevMonthBtn = document.getElementById("prevMonthBtn");
+    const nextMonthBtn = document.getElementById("nextMonthBtn");
+    const monthLabel = document.getElementById("monthLabel");
+    const monthStamp = document.getElementById("monthStamp");
+    const monthRate = document.getElementById("monthRate");
+    const rewardBadge = document.getElementById("rewardBadge");
+    const calendarGrid = document.getElementById("calendarGrid");
+    const dayDetailCard = document.getElementById("dayDetailCard");
+    const emptyBox = document.getElementById("emptyBox");
+    const errorBox = document.getElementById("errorBox");
+    const okBox = document.getElementById("okBox");
+    const todayInfo = document.getElementById("todayInfo");
+
+    let habits = [];
+    let appSettings = { reward: "" };
+    let currentPage = "home";
+    let calendarMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+    let selectedDate = todayText();
+    let selectedWeekdays = [];
+
+    /** 端末のローカル日付を YYYY-MM-DD（カレンダー表示と一致） */
+    function localYmdFromDate(date) {
+      const y = date.getFullYear();
+      const m = String(date.getMonth() + 1).padStart(2, "0");
+      const d = String(date.getDate()).padStart(2, "0");
+      return `${y}-${m}-${d}`;
+    }
+
+    function todayText() {
+      return localYmdFromDate(new Date());
+    }
+
+    /** 保存済み日付を正規化（ゼロ埋めなしの古いデータも吸収） */
+    function normalizeYmd(raw) {
+      if (typeof raw !== "string") return null;
+      const m = raw.trim().match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+      if (!m) return null;
+      const y = Number(m[1]);
+      const mo = Number(m[2]);
+      const d = Number(m[3]);
+      if (!Number.isFinite(y) || !Number.isFinite(mo) || !Number.isFinite(d)) return null;
+      if (mo < 1 || mo > 12 || d < 1 || d > 31) return null;
+      return `${y}-${String(mo).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+    }
+
+    function habitDoneOnYmd(habit, ymd) {
+      const checkedDates = Array.isArray(habit.checkedDates) ? habit.checkedDates : [];
+      return checkedDates.some((raw) => normalizeYmd(raw) === ymd);
+    }
+
+    function normalizedHabitStartDate(habit) {
+      const normalized = normalizeYmd(habit?.startDate);
+      // 既存データ（startDate 未保存）は従来挙動を維持するため最小日付を使う
+      return normalized || "0001-01-01";
+    }
+
+    function normalizedHabitEndDate(habit) {
+      return normalizeYmd(habit?.endDate);
+    }
+
+    function normalizeLineColor(raw) {
+      const allowed = ["yellow", "pink", "blue", "green"];
+      return allowed.includes(raw) ? raw : "yellow";
+    }
+
+    function normalizeWeekdays(raw) {
+      if (!Array.isArray(raw)) return [];
+      const normalized = raw
+        .map((x) => Number(x))
+        .filter((x) => Number.isInteger(x) && x >= 0 && x <= 6);
+      return [...new Set(normalized)];
+    }
+
+    function weekdayLabel(day) {
+      const labels = {
+        0: "日",
+        1: "月",
+        2: "火",
+        3: "水",
+        4: "木",
+        5: "金",
+        6: "土",
+      };
+      return labels[day] || "";
+    }
+
+    function formatWeekdays(weekdays) {
+      if (!Array.isArray(weekdays) || weekdays.length === 0) return "-";
+      const order = [1, 2, 3, 4, 5, 6, 0];
+      const set = new Set(weekdays);
+      return order.filter((d) => set.has(d)).map((d) => weekdayLabel(d)).join("・");
+    }
+
+    function requiredWeekdayCount(frequency) {
+      if (frequency === "weekly1") return 1;
+      if (frequency === "weekly3") return 3;
+      return 0;
+    }
+
+    function isWeeklyFrequency(frequency) {
+      return frequency === "weekly1" || frequency === "weekly3";
+    }
+
+    function weekdayFromYmd(dateStr) {
+      const m = normalizeYmd(dateStr)?.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+      if (!m) return null;
+      const y = Number(m[1]);
+      const mo = Number(m[2]) - 1;
+      const d = Number(m[3]);
+      return new Date(y, mo, d).getDay();
+    }
+
+    /**
+     * その日付で達成率計算の対象になる習慣かどうか
+     * daily は開始日〜終了日(任意)の範囲で対象
+     * oneday は開始日当日のみ対象
+     * weekly1 / weekly3 は設定した曜日のみ対象
+     */
+    function isHabitTargetForDate(habit, dateStr) {
+      const startDate = normalizedHabitStartDate(habit);
+      const endDate = normalizedHabitEndDate(habit);
+      if (dateStr < startDate) return false;
+      if (endDate && dateStr > endDate) return false;
+      const frequency = habit?.frequency || "";
+      if (frequency === "daily") return true;
+      if (frequency === "oneday") return dateStr === startDate;
+      if (isWeeklyFrequency(frequency)) {
+        const weekdays = normalizeWeekdays(habit?.weekdays);
+        const day = weekdayFromYmd(dateStr);
+        if (day === null) return false;
+        return weekdays.includes(day);
+      }
+      return false;
+    }
+
+    /**
+     * カレンダー下部の色ライン表示対象かどうか
+     * - endDate が設定されている項目のみ表示対象
+     * - 表示期間は startDate 〜 endDate
+     */
+    function isHabitLineTargetForDate(habit, dateStr) {
+      const startDate = normalizedHabitStartDate(habit);
+      const endDate = normalizedHabitEndDate(habit);
+      if (!endDate) return false;
+      return dateStr >= startDate && dateStr <= endDate;
+    }
+
+    function showError(message) {
+      if (!message) {
+        errorBox.hidden = true;
+        errorBox.textContent = "";
+        return;
+      }
+      errorBox.hidden = false;
+      errorBox.textContent = message;
+    }
+
+    function showOk(message) {
+      if (!message) {
+        okBox.hidden = true;
+        okBox.textContent = "";
+        return;
+      }
+      okBox.hidden = false;
+      okBox.textContent = message;
+    }
+
+    function frequencyLabel(value) {
+      if (value === "daily") return "毎日";
+      if (value === "oneday") return "1日";
+      if (value === "weekly1") return "週1";
+      if (value === "weekly3") return "週3";
+      return value;
+    }
+
+    function loadHabits() {
+      const raw = localStorage.getItem(HABITS_KEY);
+      if (!raw) return [];
+      try {
+        const parsed = JSON.parse(raw);
+        if (!Array.isArray(parsed)) return [];
+        return parsed.map((habit) => {
+          const rawDates = Array.isArray(habit.checkedDates) ? habit.checkedDates : [];
+          const checkedDates = [
+            ...new Set(
+              rawDates
+                .map((x) => normalizeYmd(x))
+                .filter((x) => x !== null)
+            ),
+          ];
+          return {
+            ...habit,
+            checkedDates,
+            startDate: normalizedHabitStartDate(habit),
+            endDate: normalizedHabitEndDate(habit),
+            lineColor: normalizeLineColor(habit?.lineColor),
+            weekdays: normalizeWeekdays(habit?.weekdays),
+            streak: Number(habit.streak) || 0,
+            lastDoneDate: habit.lastDoneDate ? normalizeYmd(habit.lastDoneDate) || habit.lastDoneDate : null,
+          };
+        });
+      } catch (error) {
+        return [];
+      }
+    }
+
+    function saveHabits() {
+      localStorage.setItem(HABITS_KEY, JSON.stringify(habits));
+    }
+
+    function loadSettings() {
+      const raw = localStorage.getItem(SETTINGS_KEY);
+      if (!raw) return { reward: "" };
+      try {
+        const parsed = JSON.parse(raw);
+        return {
+          reward: typeof parsed.reward === "string" ? parsed.reward : "",
+        };
+      } catch (error) {
+        return { reward: "" };
+      }
+    }
+
+    function saveSettings() {
+      localStorage.setItem(SETTINGS_KEY, JSON.stringify(appSettings));
+    }
+
+    function nextId() {
+      if (habits.length === 0) return 1;
+      return Math.max(...habits.map((h) => Number(h.id) || 0)) + 1;
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;");
+    }
+
+    function isDoneToday(habit) {
+      return habitDoneOnYmd(habit, todayText());
+    }
+
+    function renderDayDetail() {
+      const dateStr = normalizeYmd(selectedDate);
+      if (!dateStr) {
+        dayDetailCard.innerHTML = `<p class="day-detail-empty">日付を選択してください。</p>`;
+        return;
+      }
+
+      const targetHabits = habits.filter((habit) => isHabitTargetForDate(habit, dateStr));
+      const lineTargetHabits = habits.filter((habit) => isHabitLineTargetForDate(habit, dateStr));
+      const doneCount = targetHabits.filter((habit) => habitDoneOnYmd(habit, dateStr)).length;
+      const rates = dayRatesFromCounts(doneCount, targetHabits.length);
+      const rateText = rates.rate100 === null ? "--%" : `${rates.rate100}%`;
+
+      const habitsHtml = targetHabits.length > 0
+        ? `<ul class="day-detail-list">${targetHabits
+          .map((habit) => `<li>${escapeHtml(habit.name)}：${habitDoneOnYmd(habit, dateStr) ? "実施済み" : "未実施"}</li>`)
+          .join("")}</ul>`
+        : `<p class="day-detail-empty">対象の習慣はありません。</p>`;
+
+      const lineHtml = lineTargetHabits.length > 0
+        ? `<ul class="day-detail-list">${lineTargetHabits
+          .map((habit) => `<li>${escapeHtml(habit.name)}（ライン: ${escapeHtml(normalizeLineColor(habit.lineColor))}）</li>`)
+          .join("")}</ul>`
+        : `<p class="day-detail-empty">期限付き予定はありません。</p>`;
+
+      dayDetailCard.innerHTML = `
+        <h3 class="day-detail-title">その日の詳細: ${escapeHtml(dateStr)}</h3>
+        <p class="day-detail-meta">達成率: ${rateText}（${doneCount}/${targetHabits.length}）</p>
+        <p class="day-detail-meta">対象習慣</p>
+        ${habitsHtml}
+        <p class="day-detail-meta">期限付き予定（色ライン）</p>
+        ${lineHtml}
+      `;
+    }
+
+    function renderHabits() {
+      habitList.innerHTML = "";
+      const today = todayText();
+      todayInfo.textContent = `今日: ${today}`;
+
+      const targetHabitsToday = habits.filter((habit) => isHabitTargetForDate(habit, today));
+
+      if (targetHabitsToday.length === 0) {
+        emptyBox.hidden = false;
+        return;
+      }
+
+      emptyBox.hidden = true;
+      const sorted = [...targetHabitsToday].sort((a, b) => Number(a.id) - Number(b.id));
+      sorted.forEach((habit) => {
+        const checked = isDoneToday(habit);
+        const item = document.createElement("div");
+        item.className = "habit-item";
+        item.innerHTML = `
+          <div class="habit-row">
+            <div class="habit-main">
+              <div>
+                <div class="habit-name">${escapeHtml(habit.name)}</div>
+                <div class="habit-sub">頻度: ${frequencyLabel(habit.frequency)}</div>
+                ${isWeeklyFrequency(habit.frequency) ? `<div class="habit-sub">曜日: ${escapeHtml(formatWeekdays(habit.weekdays))}</div>` : ""}
+                <div class="habit-sub">期限: ${habit.endDate ? escapeHtml(habit.endDate) : "期限なし"}</div>
+              </div>
+            </div>
+            <button type="button" class="check-btn ${checked ? "checked" : ""}" data-action="toggle" data-id="${habit.id}">
+              ${checked ? "実施済み" : "未実施"}
+            </button>
+          </div>
+          <button type="button" class="delete-btn" data-action="delete" data-id="${habit.id}">この習慣を削除</button>
+        `;
+        habitList.appendChild(item);
+      });
+    }
+
+    function monthText(date) {
+      const y = date.getFullYear();
+      const m = date.getMonth() + 1;
+      return `${y}年${m}月`;
+    }
+
+    function monthDateText(year, month, day) {
+      const mm = String(month + 1).padStart(2, "0");
+      const dd = String(day).padStart(2, "0");
+      return `${year}-${mm}-${dd}`;
+    }
+
+    /**
+     * その日の「習慣達成率」を数値化する（内部は必ず 0〜1 の rate01 と 0〜100 の rate100 を両方持つ）
+     * - 通常: rate01 = doneCount / totalHabits（0〜1の小数）
+     * - もし誤って百分率が入っている場合: rate01 > 1 かつ <= 100 なら /100 で 0〜1 に直す
+     */
+    function dayRatesFromCounts(doneCount, totalHabits) {
+      const t = Number(totalHabits);
+      const d = Number(doneCount);
+      if (!Number.isFinite(t) || t <= 0 || !Number.isFinite(d)) {
+        return { rate01: null, rate100: null };
+      }
+      let r01 = d / t;
+      if (Number.isNaN(r01)) return { rate01: null, rate100: null };
+      if (r01 > 1 && r01 <= 100) {
+        r01 /= 100;
+      }
+      r01 = Math.min(1, Math.max(0, r01));
+      const rate100 = Math.round(r01 * 10000) / 100;
+      return { rate01: r01, rate100 };
+    }
+
+    function starClassFromRates(rate01, rate100, doneCount, totalHabits) {
+      if (rate01 === null) return "";
+
+      if (rate01 >= 1) {
+        return "star-gold";   // 100%
+      } else if (rate01 >= 0.8) {
+        return "star-blue";   // 80%以上
+      }
+
+      return "";
+    }
+
+    function doneDaysInMonth(year, month) {
+      const done = new Set();
+      habits.forEach((habit) => {
+        const checkedDates = Array.isArray(habit.checkedDates) ? habit.checkedDates : [];
+        checkedDates.forEach((raw) => {
+          const dateStr = normalizeYmd(raw);
+          if (!dateStr) return;
+          const matched = dateStr.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+          if (!matched) return;
+          const y = Number(matched[1]);
+          const m = Number(matched[2]) - 1;
+          const d = Number(matched[3]);
+          if (y === year && m === month) {
+            done.add(d);
+          }
+        });
+      });
+      return done;
+    }
+
+    function renderStampPage() {
+      const today = new Date();
+      const todayStr = todayText();
+      const year = calendarMonth.getFullYear();
+      const month = calendarMonth.getMonth();
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+      const firstWeekday = new Date(year, month, 1).getDay();
+
+      monthLabel.textContent = monthText(calendarMonth);
+      calendarGrid.innerHTML = "";
+
+      const weekdays = ["日", "月", "火", "水", "木", "金", "土"];
+      weekdays.forEach((weekday) => {
+        const el = document.createElement("div");
+        el.className = "calendar-weekday";
+        el.textContent = weekday;
+        calendarGrid.appendChild(el);
+      });
+
+      let elapsedDays = 0;
+      const isSameYearMonth = year === today.getFullYear() && month === today.getMonth();
+      if (isSameYearMonth) {
+        elapsedDays = today.getDate();
+      } else if (new Date(year, month, 1) < new Date(today.getFullYear(), today.getMonth(), 1)) {
+        elapsedDays = daysInMonth;
+      }
+
+      let stampDays = 0;
+
+      for (let i = 0; i < firstWeekday; i += 1) {
+        const empty = document.createElement("div");
+        empty.className = "calendar-cell is-empty";
+        calendarGrid.appendChild(empty);
+      }
+
+      for (let day = 1; day <= daysInMonth; day += 1) {
+        const cell = document.createElement("div");
+        const dateStr = monthDateText(year, month, day);
+        const isToday = dateStr === todayStr;
+        const isSelected = dateStr === selectedDate;
+        const isFutureDate = dateStr > todayStr;
+        const targetHabits = habits.filter((habit) => isHabitTargetForDate(habit, dateStr));
+        const totalHabits = targetHabits.length;
+        const lineTargetHabit = habits.find((habit) => isHabitLineTargetForDate(habit, dateStr));
+        const lineColorClass = lineTargetHabit ? `line-${normalizeLineColor(lineTargetHabit.lineColor)}` : "";
+
+        let doneCount = 0;
+        targetHabits.forEach((habit) => {
+          if (habitDoneOnYmd(habit, dateStr)) {
+            doneCount += 1;
+          }
+        });
+
+        let rate01 = null;
+        let starClass = "";
+        if (!isFutureDate && totalHabits > 0) {
+          const rates = dayRatesFromCounts(doneCount, totalHabits);
+          rate01 = rates.rate01;
+          starClass = starClassFromRates(rate01, null, doneCount, totalHabits);
+        }
+
+        if (!isFutureDate && starClass) {
+          stampDays += 1;
+        }
+
+        cell.className = "calendar-cell";
+        if (isToday) cell.classList.add("is-today");
+        if (isSelected) cell.classList.add("is-selected");
+        cell.setAttribute("data-date", dateStr);
+        const starHtml = starClass
+          ? `<div class="calendar-star ${starClass}" title="達成率">★</div>`
+          : `<div class="calendar-star calendar-star-placeholder" aria-hidden="true">★</div>`;
+        const lineHtml = lineColorClass
+          ? `<div class="calendar-line ${lineColorClass}" aria-hidden="true"></div>`
+          : "";
+        cell.innerHTML = `
+          <div class="calendar-day">${day}</div>
+          ${starHtml}
+          ${lineHtml}
+        `;
+        calendarGrid.appendChild(cell);
+      }
+
+      renderDayDetail();
+
+      if (elapsedDays === 0) {
+        monthStamp.textContent = "🌟 今月のスタンプ：0個";
+        monthRate.textContent = "達成率：--%";
+        rewardBadge.hidden = true;
+        rewardBadge.textContent = "";
+      } else {
+        const rate = Math.round((stampDays / elapsedDays) * 100);
+        monthStamp.textContent = `🌟 今月のスタンプ：${stampDays}個`;
+        monthRate.textContent = `達成率：${rate}%`;
+        if (rate >= 80) {
+          const rewardText = (appSettings.reward || "").trim();
+          rewardBadge.hidden = false;
+          rewardBadge.textContent = rewardText
+            ? `今月のごほうびスタンプ獲得！ ごほうび: ${rewardText}`
+            : "今月のごほうびスタンプ獲得！";
+        } else {
+          rewardBadge.hidden = true;
+          rewardBadge.textContent = "";
+        }
+      }
+    }
+
+    function renderPage() {
+      homePage.classList.toggle("is-visible", currentPage === "home");
+      setupPage.classList.toggle("is-visible", currentPage === "setup");
+      stampPage.classList.toggle("is-visible", currentPage === "stamp");
+
+      menuNav.querySelectorAll(".menu-btn").forEach((button) => {
+        if (!(button instanceof HTMLElement)) return;
+        const isActive = button.getAttribute("data-page") === currentPage;
+        button.classList.toggle("is-active", isActive);
+      });
+    }
+
+    function setPage(page) {
+      const allowedPages = ["home", "setup", "stamp"];
+      if (!allowedPages.includes(page)) {
+        return;
+      }
+      currentPage = page;
+      renderPage();
+    }
+
+    function clearForm() {
+      habitNameInput.value = "";
+      frequencyInput.value = "daily";
+      startDateInput.value = todayText();
+      endDateInput.value = "";
+      lineColorInput.value = "yellow";
+      selectedWeekdays = [];
+      renderWeekdaySelector();
+    }
+
+    function renderWeekdaySelector() {
+      const frequency = frequencyInput.value;
+      const required = requiredWeekdayCount(frequency);
+      const shouldShow = required > 0;
+      weekdayField.hidden = !shouldShow;
+      weekdayField.style.display = shouldShow ? "" : "none";
+      if (!shouldShow) {
+        selectedWeekdays = [];
+      }
+      if (required === 0) {
+        weekdayHint.textContent = "";
+      } else {
+        weekdayHint.textContent = `選択中: ${selectedWeekdays.length}/${required}`;
+      }
+      weekdayButtons.querySelectorAll(".weekday-btn").forEach((button) => {
+        if (!(button instanceof HTMLElement)) return;
+        const day = Number(button.getAttribute("data-weekday"));
+        button.classList.toggle("is-active", selectedWeekdays.includes(day));
+      });
+    }
+
+    function toggleWeekday(day) {
+      const frequency = frequencyInput.value;
+      const required = requiredWeekdayCount(frequency);
+      if (required === 0) return;
+      const exists = selectedWeekdays.includes(day);
+      if (exists) {
+        selectedWeekdays = selectedWeekdays.filter((d) => d !== day);
+      } else if (selectedWeekdays.length < required) {
+        selectedWeekdays = [...selectedWeekdays, day];
+      } else {
+        showError(`${frequencyLabel(frequency)}は曜日を${required}つまで選択できます。`);
+      }
+      renderWeekdaySelector();
+    }
+
+    function addHabit(name, frequency, startDate, endDate, lineColor, weekdays) {
+      habits.push({
+        id: nextId(),
+        name,
+        frequency,
+        startDate,
+        endDate,
+        lineColor,
+        weekdays,
+        checkedDates: [],
+        streak: 0,
+        lastDoneDate: null,
+      });
+      saveHabits();
+    }
+
+    function yesterdayText() {
+      const d = new Date();
+      d.setDate(d.getDate() - 1);
+      return localYmdFromDate(d);
+    }
+
+    function toggleTodayCheck(habitId) {
+      const today = todayText();
+      const yesterday = yesterdayText();
+      habits = habits.map((habit) => {
+        if (Number(habit.id) !== habitId) return habit;
+        const checkedDates = Array.isArray(habit.checkedDates) ? [...habit.checkedDates] : [];
+        const hasToday = checkedDates.some((raw) => normalizeYmd(raw) === today);
+        if (hasToday) {
+          const nextDates = checkedDates.filter((raw) => normalizeYmd(raw) !== today);
+          return { ...habit, checkedDates: nextDates };
+        }
+
+        checkedDates.push(today);
+        const prevLastDoneDate = habit.lastDoneDate || null;
+        const prevStreak = Number(habit.streak) || 0;
+        let nextStreak = 1;
+        if (prevLastDoneDate === yesterday) {
+          nextStreak = prevStreak + 1;
+        }
+
+        const updatedHabit = {
+          ...habit,
+          checkedDates,
+          streak: nextStreak,
+          lastDoneDate: today,
+        };
+
+        if (nextStreak === 7) {
+          window.alert(`${habit.name}：7日達成！🎉`);
+        }
+
+        return updatedHabit;
+      });
+      saveHabits();
+    }
+
+    function deleteHabit(habitId) {
+      habits = habits.filter((habit) => Number(habit.id) !== habitId);
+      saveHabits();
+    }
+
+    resetFormBtn.addEventListener("click", () => {
+      clearForm();
+      showError("");
+      showOk("");
+    });
+
+    habitForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const name = (habitNameInput.value || "").trim();
+      const frequency = frequencyInput.value;
+      const startDate = normalizeYmd(startDateInput.value);
+      const endDateRaw = normalizeYmd(endDateInput.value);
+      const endDate = endDateRaw || null;
+      const lineColor = normalizeLineColor(lineColorInput.value);
+      const weekdays = normalizeWeekdays(selectedWeekdays);
+      const requiredWeekdays = requiredWeekdayCount(frequency);
+      if (!name) {
+        showError("習慣名を入力してください。");
+        return;
+      }
+      if (!startDate) {
+        showError("開始日を正しく入力してください。");
+        return;
+      }
+      if (endDate && endDate < startDate) {
+        showError("終了日は開始日以降の日付を入力してください。");
+        return;
+      }
+      if (requiredWeekdays > 0 && weekdays.length !== requiredWeekdays) {
+        showError(`${frequencyLabel(frequency)}は曜日を${requiredWeekdays}つ選択してください。`);
+        return;
+      }
+
+      addHabit(name, frequency, startDate, endDate, lineColor, weekdays);
+      clearForm();
+      showError("");
+      showOk("習慣を登録しました。");
+      renderHabits();
+      renderStampPage();
+      setPage("home");
+    });
+
+    saveRewardBtn.addEventListener("click", () => {
+      appSettings.reward = (rewardInput.value || "").trim();
+      saveSettings();
+      showError("");
+      showOk("ごほうび設定を保存しました。");
+      renderStampPage();
+    });
+
+    habitList.addEventListener("click", (event) => {
+      const target = event.target;
+      if (!(target instanceof HTMLElement)) return;
+
+      const action = target.getAttribute("data-action");
+      const idRaw = target.getAttribute("data-id");
+      if (!action || !idRaw) return;
+      const habitId = Number(idRaw);
+
+      if (action === "toggle") {
+        toggleTodayCheck(habitId);
+        showError("");
+        showOk("今日の実施記録を更新しました。");
+        renderHabits();
+        renderStampPage();
+      }
+
+      if (action === "delete") {
+        const selected = habits.find((habit) => Number(habit.id) === habitId);
+        const ok = window.confirm(`「${selected ? selected.name : "この習慣"}」を削除しますか？`);
+        if (!ok) return;
+        deleteHabit(habitId);
+        showError("");
+        showOk("習慣を削除しました。");
+        renderHabits();
+        renderStampPage();
+      }
+    });
+
+    menuNav.addEventListener("click", (event) => {
+      const target = event.target;
+      if (!(target instanceof HTMLElement)) return;
+      const page = target.getAttribute("data-page");
+      if (!page) return;
+      setPage(page);
+    });
+
+    frequencyInput.addEventListener("change", () => {
+      const required = requiredWeekdayCount(frequencyInput.value);
+      if (required === 0) {
+        selectedWeekdays = [];
+      } else if (selectedWeekdays.length > required) {
+        selectedWeekdays = selectedWeekdays.slice(0, required);
+      }
+      renderWeekdaySelector();
+      showError("");
+    });
+
+    weekdayButtons.addEventListener("click", (event) => {
+      const target = event.target;
+      if (!(target instanceof HTMLElement)) return;
+      const button = target.closest(".weekday-btn");
+      if (!(button instanceof HTMLElement)) return;
+      const day = Number(button.getAttribute("data-weekday"));
+      if (!Number.isInteger(day) || day < 0 || day > 6) return;
+      toggleWeekday(day);
+    });
+
+    calendarGrid.addEventListener("click", (event) => {
+      const target = event.target;
+      if (!(target instanceof HTMLElement)) return;
+      const cell = target.closest(".calendar-cell");
+      if (!(cell instanceof HTMLElement)) return;
+      const dateStr = cell.getAttribute("data-date");
+      if (!dateStr) return;
+      selectedDate = dateStr;
+      renderStampPage();
+    });
+
+    prevMonthBtn.addEventListener("click", () => {
+      calendarMonth = new Date(calendarMonth.getFullYear(), calendarMonth.getMonth() - 1, 1);
+      renderStampPage();
+    });
+
+    nextMonthBtn.addEventListener("click", () => {
+      calendarMonth = new Date(calendarMonth.getFullYear(), calendarMonth.getMonth() + 1, 1);
+      renderStampPage();
+    });
+
+    habits = loadHabits();
+    appSettings = loadSettings();
+    rewardInput.value = appSettings.reward || "";
+    showError("");
+    showOk("");
+    renderHabits();
+    renderStampPage();
+    clearForm();
+    renderWeekdaySelector();
+    renderPage();
+  </script>
 </body>
 </html>
